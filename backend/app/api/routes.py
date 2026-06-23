@@ -2,26 +2,26 @@
 import os
 import tempfile
 from fastapi import APIRouter, UploadFile, File, HTTPException
-
 from app.services.pdf_service import extract_text_from_pdf
+from app.models.schemas import RootResponse, HealthResponse, UploadResponse
 
 router = APIRouter()
 
 
 # home route
-@router.get("/")
+@router.get("/", response_model=RootResponse)
 def root():
     return {"message": "ClauseIQ API is running"}
 
 
 # health route
-@router.get("/health")
+@router.get("/health", response_model=HealthResponse)
 def health_check():
     return {"status": "ok"}
 
 
 # upload pdf route
-@router.post("/upload")
+@router.post("/upload", response_model=UploadResponse)
 async def upload_pdf(file: UploadFile = File(...)):
     if file.content_type != "application/pdf":
         raise HTTPException(
