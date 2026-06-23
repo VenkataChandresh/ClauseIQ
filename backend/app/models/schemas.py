@@ -9,9 +9,14 @@ class HealthResponse(BaseModel):
     status: str
 
 
-class UploadResponse(BaseModel):
+class DocumentUploadResult(BaseModel):
     filename: str
     page_count: int
     text_length: int
     chunk_count: int
+
+
+class UploadResponse(BaseModel):
+    document_count: int
+    documents: list[DocumentUploadResult]
     message: str
