@@ -13,4 +13,5 @@ class UploadResponse(BaseModel):
     filename: str
     page_count: int
     text_length: int
+    chunk_count: int
     message: str

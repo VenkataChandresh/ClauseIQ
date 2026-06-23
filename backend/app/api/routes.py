@@ -4,6 +4,7 @@ import tempfile
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from app.services.pdf_service import extract_text_from_pdf
 from app.models.schemas import RootResponse, HealthResponse, UploadResponse
+from app.services.chunk_service import chunk_text
 
 router = APIRouter()
 
@@ -36,12 +37,14 @@ async def upload_pdf(file: UploadFile = File(...)):
 
     try:
         pdf_data = extract_text_from_pdf(temp_file_path)
+        chunks = chunk_text(pdf_data["text"])
 
         return {
             "filename": file.filename,
             "page_count": pdf_data["page_count"],
             "text_length": pdf_data["text_length"],
-            "message": "PDF uploaded and text extracted successfully.",
+            "chunk_count": len(chunks),
+            "message": "PDF uploaded, text extracted, and chunked successfully.",
         }
 
     finally:
