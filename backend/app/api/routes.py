@@ -15,7 +15,7 @@ from app.models.schemas import (
 )
 from app.services.chunk_service import chunk_text
 from app.services.session_store import save_session_chunks, get_session_chunks
-from app.services.retrieval_service import find_best_matching_chunk
+from app.services.retrieval_service import find_top_matching_chunks
 
 router = APIRouter()
 
@@ -132,21 +132,24 @@ def ask_question(request: AskRequest):
             detail="Session not found.",
         )
 
-    match = find_best_matching_chunk(request.question, chunks)
+    matches = find_top_matching_chunks(request.question, chunks, top_k=3)
 
-    if match is None:
+    if not matches:
         raise HTTPException(
             status_code=404,
-            detail="No matching chunk found.",
+            detail="No matching chunks found.",
         )
-
-    best_chunk = match["chunk"]
 
     return {
         "session_id": request.session_id,
         "question": request.question,
-        "matched_filename": best_chunk["filename"],
-        "matched_chunk_index": best_chunk["chunk_index"],
-        "matched_text": best_chunk["text"],
-        "score": match["score"],
+        "matches": [
+            {
+                "matched_filename": match["chunk"]["filename"],
+                "matched_chunk_index": match["chunk"]["chunk_index"],
+                "matched_text": match["chunk"]["text"],
+                "score": match["score"],
+            }
+            for match in matches
+        ],
     }

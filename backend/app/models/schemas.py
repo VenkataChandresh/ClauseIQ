@@ -42,6 +42,10 @@ class AskRequest(BaseModel):
 class AskResponse(BaseModel):
     session_id: str
     question: str
+    matches: list[MatchedChunk]
+
+
+class MatchedChunk(BaseModel):
     matched_filename: str
     matched_chunk_index: int
     matched_text: str

@@ -28,24 +28,25 @@ def clean_words(text: str) -> set[str]:
     return {word for word in words if word not in STOP_WORDS}
 
 
-def find_best_matching_chunk(question: str, chunks: list[dict]) -> dict | None:
+def find_top_matching_chunks(
+    question: str, chunks: list[dict], top_k: int = 3
+) -> list[dict]:
     question_words = clean_words(question)
 
-    best_chunk = None
-    best_score = 0
+    scored_chunks = []
 
     for chunk in chunks:
         chunk_words = clean_words(chunk["text"])
         score = len(question_words.intersection(chunk_words))
 
-        if score > best_score:
-            best_score = score
-            best_chunk = chunk
+        if score > 0:
+            scored_chunks.append(
+                {
+                    "chunk": chunk,
+                    "score": score,
+                }
+            )
 
-    if best_chunk is None:
-        return None
+    scored_chunks.sort(key=lambda item: item["score"], reverse=True)
 
-    return {
-        "chunk": best_chunk,
-        "score": best_score,
-    }
+    return scored_chunks[:top_k]
