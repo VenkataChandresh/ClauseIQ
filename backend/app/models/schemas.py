@@ -48,5 +48,5 @@ class AskResponse(BaseModel):
 class MatchedChunk(BaseModel):
     matched_filename: str
     matched_chunk_index: int
-    matched_text: str
+    matched_text_preview: str
     score: int

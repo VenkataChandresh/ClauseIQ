@@ -147,7 +147,7 @@ def ask_question(request: AskRequest):
             {
                 "matched_filename": match["chunk"]["filename"],
                 "matched_chunk_index": match["chunk"]["chunk_index"],
-                "matched_text": match["chunk"]["text"],
+                "matched_text_preview": match["chunk"]["text"][:300],
                 "score": match["score"],
             }
             for match in matches
