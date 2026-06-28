@@ -6,6 +6,7 @@ from app.services.pdf_service import extract_text_from_pdf
 from app.models.schemas import RootResponse, HealthResponse, UploadResponse
 from app.services.chunk_service import chunk_text
 from typing import Annotated, List
+import uuid
 
 router = APIRouter()
 
@@ -32,7 +33,7 @@ async def upload_pdfs(
             status_code=400,
             detail="You can upload a maximum of 5 PDF files.",
         )
-
+    session_id = str(uuid.uuid4())
     documents = []
 
     for file in files:
@@ -64,6 +65,7 @@ async def upload_pdfs(
             os.remove(temp_file_path)
 
     return {
+        "session_id": session_id,
         "document_count": len(documents),
         "documents": documents,
         "message": "PDFs uploaded, text extracted, and chunked successfully.",

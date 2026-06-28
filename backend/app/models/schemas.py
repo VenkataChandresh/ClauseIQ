@@ -17,6 +17,7 @@ class DocumentUploadResult(BaseModel):
 
 
 class UploadResponse(BaseModel):
+    session_id: str
     document_count: int
     documents: list[DocumentUploadResult]
     message: str
