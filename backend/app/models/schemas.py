@@ -42,6 +42,7 @@ class AskRequest(BaseModel):
 class AskResponse(BaseModel):
     session_id: str
     question: str
+    answer: str
     matches: list[MatchedChunk]
 
 

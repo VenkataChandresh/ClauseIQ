@@ -17,6 +17,7 @@ from app.services.chunk_service import chunk_text
 from app.services.session_store import save_session_chunks, get_session_chunks
 from app.services.retrieval_service import find_top_matching_chunks
 from app.services.chroma_service import add_chunks_to_chroma, query_session_chroma
+from app.services.llm_service import generate_answer
 
 router = APIRouter()
 
@@ -142,9 +143,12 @@ def ask_question(request: AskRequest):
             detail="No matching chunks found.",
         )
 
+    answer = generate_answer(request.question, matches)
+
     return {
         "session_id": request.session_id,
         "question": request.question,
+        "answer": answer,
         "matches": [
             {
                 "matched_filename": match["filename"],
