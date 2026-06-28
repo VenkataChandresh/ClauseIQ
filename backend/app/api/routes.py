@@ -150,7 +150,7 @@ def ask_question(request: AskRequest):
                 "matched_filename": match["filename"],
                 "matched_chunk_index": match["chunk_index"],
                 "matched_text_preview": match["text"][:300],
-                "score": round(1 / (1 + match["distance"]), 4),
+                "confidence_score": round(1 / (1 + match["distance"]), 4),
             }
             for match in matches
         ],

@@ -49,4 +49,4 @@ class MatchedChunk(BaseModel):
     matched_filename: str
     matched_chunk_index: int
     matched_text_preview: str
-    score: float
+    confidence_score: float
