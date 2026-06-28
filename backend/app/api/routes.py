@@ -16,6 +16,7 @@ from app.models.schemas import (
 from app.services.chunk_service import chunk_text
 from app.services.session_store import save_session_chunks, get_session_chunks
 from app.services.retrieval_service import find_top_matching_chunks
+from app.services.chroma_service import add_chunks_to_chroma, query_session_chroma
 
 router = APIRouter()
 
@@ -83,6 +84,7 @@ async def upload_pdfs(
             os.remove(temp_file_path)
 
     save_session_chunks(session_id, all_chunks)
+    add_chunks_to_chroma(session_id, all_chunks)
     return {
         "session_id": session_id,
         "document_count": len(documents),
@@ -132,7 +134,7 @@ def ask_question(request: AskRequest):
             detail="Session not found.",
         )
 
-    matches = find_top_matching_chunks(request.question, chunks, top_k=3)
+    matches = query_session_chroma(request.session_id, request.question, top_k=3)
 
     if not matches:
         raise HTTPException(
@@ -145,10 +147,10 @@ def ask_question(request: AskRequest):
         "question": request.question,
         "matches": [
             {
-                "matched_filename": match["chunk"]["filename"],
-                "matched_chunk_index": match["chunk"]["chunk_index"],
-                "matched_text_preview": match["chunk"]["text"][:300],
-                "score": match["score"],
+                "matched_filename": match["filename"],
+                "matched_chunk_index": match["chunk_index"],
+                "matched_text_preview": match["text"][:300],
+                "score": round(1 / (1 + match["distance"]), 4),
             }
             for match in matches
         ],

@@ -3,3 +3,4 @@ uvicorn[standard]
 python-dotenv
 pymupdf   # lets python read pdf's and extract text
 python-multipart # required by fastapi when you accept file uploads through UploadFile
+chromadb #vector db
