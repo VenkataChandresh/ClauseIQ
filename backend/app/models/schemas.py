@@ -21,3 +21,14 @@ class UploadResponse(BaseModel):
     document_count: int
     documents: list[DocumentUploadResult]
     message: str
+
+
+class SessionDocumentSummary(BaseModel):
+    filename: str
+    chunk_count: int
+
+
+class SessionSummaryResponse(BaseModel):
+    session_id: str
+    total_chunks: int
+    documents: list[SessionDocumentSummary]
