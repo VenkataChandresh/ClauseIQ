@@ -149,13 +149,14 @@ def ask_question(request: AskRequest):
         "session_id": request.session_id,
         "question": request.question,
         "answer": answer,
-        "matches": [
+        "sources": [
             {
-                "matched_filename": match["filename"],
-                "matched_chunk_index": match["chunk_index"],
-                "matched_text_preview": match["text"][:300],
+                "source_number": index,
+                "filename": match["filename"],
+                "chunk_index": match["chunk_index"],
+                "preview": match["text"][:300],
                 "confidence_score": round(1 / (1 + match["distance"]), 4),
             }
-            for match in matches
+            for index, match in enumerate(matches, start=1)
         ],
     }

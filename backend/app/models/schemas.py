@@ -43,11 +43,12 @@ class AskResponse(BaseModel):
     session_id: str
     question: str
     answer: str
-    matches: list[MatchedChunk]
+    sources: list[SourceChunk]
 
 
-class MatchedChunk(BaseModel):
-    matched_filename: str
-    matched_chunk_index: int
-    matched_text_preview: str
+class SourceChunk(BaseModel):
+    source_number: int
+    filename: str
+    chunk_index: int
+    preview: str
     confidence_score: float
