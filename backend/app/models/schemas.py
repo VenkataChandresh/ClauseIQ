@@ -32,3 +32,17 @@ class SessionSummaryResponse(BaseModel):
     session_id: str
     total_chunks: int
     documents: list[SessionDocumentSummary]
+
+
+class AskRequest(BaseModel):
+    session_id: str
+    question: str
+
+
+class AskResponse(BaseModel):
+    session_id: str
+    question: str
+    matched_filename: str
+    matched_chunk_index: int
+    matched_text: str
+    score: int

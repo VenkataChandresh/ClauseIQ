@@ -2,6 +2,7 @@
 import os
 import tempfile
 import uuid
+from typing import Annotated, List
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from app.services.pdf_service import extract_text_from_pdf
 from app.models.schemas import (
@@ -9,10 +10,12 @@ from app.models.schemas import (
     HealthResponse,
     UploadResponse,
     SessionSummaryResponse,
+    AskRequest,
+    AskResponse,
 )
 from app.services.chunk_service import chunk_text
 from app.services.session_store import save_session_chunks, get_session_chunks
-from typing import Annotated, List
+from app.services.retrieval_service import find_best_matching_chunk
 
 router = APIRouter()
 
@@ -116,4 +119,34 @@ def get_session_summary(session_id: str):
         "session_id": session_id,
         "total_chunks": len(chunks),
         "documents": documents,
+    }
+
+
+@router.post("/ask", response_model=AskResponse)
+def ask_question(request: AskRequest):
+    chunks = get_session_chunks(request.session_id)
+
+    if chunks is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Session not found.",
+        )
+
+    match = find_best_matching_chunk(request.question, chunks)
+
+    if match is None:
+        raise HTTPException(
+            status_code=404,
+            detail="No matching chunk found.",
+        )
+
+    best_chunk = match["chunk"]
+
+    return {
+        "session_id": request.session_id,
+        "question": request.question,
+        "matched_filename": best_chunk["filename"],
+        "matched_chunk_index": best_chunk["chunk_index"],
+        "matched_text": best_chunk["text"],
+        "score": match["score"],
     }
